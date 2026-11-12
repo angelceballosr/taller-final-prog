@@ -1,79 +1,96 @@
-
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import ttk, messagebox
+
+from inventario import (
+    cargar_productos,
+    registrar_producto,
+    consultar_inventario,
+    buscar_producto,
+    editar_producto,
+    desactivar_producto,
+    registrar_entrada,
+    registrar_salida,
+    verificar_stock
+)
 
 
-# Funcion para abrir la ventana principal
-def iniciar_interfaz():
+# Diccionario que contiene todos los productos
+productos = cargar_productos()
 
-    ventana = tk.Tk()
-    ventana.title("Sistema de Gestion de Supermercado")
-    ventana.geometry("800x600")
-    ventana.config(bg="#eeeeee")
 
-    # Titulo del sistema
+# Abre la ventana de inventario
+def abrir_inventario():
+    ventana = tk.Toplevel(ventana_principal)
+    ventana.title("Inventario - Supermercado")
+    ventana.geometry("1100x700")
+    ventana.config(bg="#f2f4f7")
+
+    # Titulo
     titulo = tk.Label(
         ventana,
-        text="SISTEMA DE GESTION DE SUPERMERCADO",
+        text="GESTION DE INVENTARIO",
         font=("Arial", 20, "bold"),
-        bg="#eeeeee"
+        bg="#f2f4f7",
+        fg="#1f2937"
     )
-    titulo.pack(pady=30)
+    titulo.pack(pady=12)
 
-    # Subtitulo
-    subtitulo = tk.Label(
+    # Marco para los campos del formulario
+    marco_formulario = tk.LabelFrame(
         ventana,
-        text="Menu Principal",
-        font=("Arial", 15),
-        bg="#eeeeee"
+        text="Datos del producto",
+        font=("Arial", 11, "bold"),
+        bg="#f2f4f7",
+        padx=10,
+        pady=10
     )
-    subtitulo.pack(pady=10)
+    marco_formulario.pack(fill="x", padx=15, pady=8)
 
-    # Botones del menu
-    boton_inventario = tk.Button(
+    etiquetas = [
+        "Codigo", "Nombre", "Categoria", "Precio compra",
+        "Precio venta", "Stock", "Stock minimo"
+    ]
+
+    entradas = {}
+
+    for i, nombre_campo in enumerate(etiquetas):
+        fila = i // 4
+        columna = (i % 4) * 2
+
+        etiqueta = tk.Label(
+            marco_formulario,
+            text=nombre_campo + ":",
+            bg="#f2f4f7",
+            font=("Arial", 10)
+        )
+        etiqueta.grid(row=fila, column=columna, padx=5, pady=7, sticky="w")
+
+        entrada = tk.Entry(marco_formulario, width=18)
+        entrada.grid(row=fila, column=columna + 1, padx=5, pady=7)
+
+        entradas[nombre_campo] = entrada
+
+    # Marco para la tabla
+    marco_tabla = tk.LabelFrame(
         ventana,
-        text="Inventario",
-        width=25,
-        height=2
+        text="Productos registrados",
+        font=("Arial", 11, "bold"),
+        bg="#f2f4f7",
+        padx=8,
+        pady=8
     )
-    boton_inventario.pack(pady=10)
+    marco_tabla.pack(fill="both", expand=True, padx=15, pady=8)
 
-    boton_ventas = tk.Button(
-        ventana,
-        text="Ventas",
-        width=25,
-        height=2
+    columnas = (
+        "codigo", "nombre", "categoria", "compra",
+        "venta", "stock", "minimo", "estado"
     )
-    boton_ventas.pack(pady=10)
 
-    boton_caja = tk.Button(
-        ventana,
-        text="Caja",
-        width=25,
-        height=2
+    tabla = ttk.Treeview(
+        marco_tabla,
+        columns=columnas,
+        show="headings",
+        height=13
     )
-    boton_caja.pack(pady=10)
 
-    boton_reportes = tk.Button(
-        ventana,
-        text="Reportes",
-        width=25,
-        height=2
-    )
-    boton_reportes.pack(pady=10)
-
-    boton_salir = tk.Button(
-        ventana,
-        text="Salir",
-        width=25,
-        height=2,
-        command=ventana.destroy
-    )
-    boton_salir.pack(pady=20)
-
-    ventana.mainloop()
-
-
-# Funcion principal
-if __name__ == "__main__":
-    iniciar_interfaz()
+    titulos_columnas = {
