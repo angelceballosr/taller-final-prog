@@ -25,17 +25,21 @@ Para ver las pruebas documentadas P01 a P15: `python pruebas.py`
 
 | Archivo | Qué hace |
 |---|---|
-| `main.py` | Inicia el programa |
-| `interfaz.py` | Pantallas de Tkinter |
-| `funciones.py` | Utilidades compartidas y reglas del negocio (IVA, descuento) |
-| `inventario.py` | 8 funciones de productos e inventario |
-| `ventas.py` | 8 funciones de carrito, pago, factura y devoluciones |
-| `caja.py` | 4 funciones de caja y reportes |
-| `persistencia.py` | `cargar_datos` y `guardar_datos` (guardado seguro con `os.replace`) |
+| `main.py` | **Todo el programa** en un solo archivo (ver secciones abajo) |
 | `productos.json`, `ventas.json`, `caja.json` | Datos |
-| `pruebas.py` | Pruebas P01–P15 |
+| `pruebas.py` | Pruebas P01–P15 (importan `main.py`) |
 
-## Reglas del negocio (se cambian en `funciones.py`)
+Secciones dentro de `main.py`, en este orden:
+
+1. **persistencia**: `cargar_datos` y `guardar_datos` (guardado seguro con `os.replace`)
+2. **funciones**: utilidades compartidas y reglas del negocio (IVA, descuento)
+3. **inventario**: 8 funciones de productos e inventario
+4. **ventas**: 8 funciones de carrito, pago, factura y devoluciones
+5. **caja**: 4 funciones de caja y reportes
+6. **interfaz**: pantallas de Tkinter
+7. **arranque**: `main()`
+
+## Reglas del negocio (se cambian al inicio de la sección *funciones* de `main.py`)
 
 - IVA: 19 % (`TASA_IMPUESTO`)
 - Descuento: 5 % en compras con subtotal desde $100.000 (`UMBRAL_DESCUENTO`, `PORCENTAJE_DESCUENTO`)

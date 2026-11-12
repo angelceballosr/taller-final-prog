@@ -10,10 +10,10 @@ import json
 import os
 import tempfile
 
-import persistencia
-import inventario as inv
-import ventas as vt
-import caja as cj
+import main as programa
+
+# Todo el programa vive en main.py; estos nombres cortos apuntan a él.
+persistencia = inv = vt = cj = programa
 
 resultados = []
 
