@@ -1,11 +1,41 @@
+
 # ==========================================
 # MODULO DE INVENTARIO
 # SISTEMA DE GESTION DE SUPERMERCADO
 # ==========================================
 
+import os
+from persistencia import cargar_datos, guardar_datos
 
-# 1. FUNCION PARA CONVERTIR Y VALIDAR NUMEROS
+
+# Ruta del archivo JSON
+RUTA_PRODUCTOS = os.path.join(
+    os.path.dirname(__file__),
+    "productos.json"
+)
+
+
+# 1. CARGAR PRODUCTOS
+def cargar_productos():
+
+    productos = cargar_datos(RUTA_PRODUCTOS, {})
+
+    if not isinstance(productos, dict):
+        print("Error: los datos de productos no son validos.")
+        return {}
+
+    return productos
+
+
+# 2. GUARDAR PRODUCTOS
+def guardar_productos(productos):
+
+    return guardar_datos(RUTA_PRODUCTOS, productos)
+
+
+# 3. CONVERTIR Y VALIDAR NUMEROS
 def convertir_entero(valor):
+
     numero = int(valor)
 
     if numero < 0:
@@ -14,7 +44,7 @@ def convertir_entero(valor):
     return numero
 
 
-# 2. REGISTRAR PRODUCTO
+# 4. REGISTRAR PRODUCTO
 def registrar_producto(productos, codigo, nombre, categoria,
                        precio_compra, precio_venta, stock, stock_minimo):
 
@@ -23,21 +53,17 @@ def registrar_producto(productos, codigo, nombre, categoria,
         nombre = nombre.strip()
         categoria = categoria.strip()
 
-        # Validar campos vacios
         if codigo == "" or nombre == "" or categoria == "":
             return False, "Todos los campos son obligatorios"
 
-        # Verificar si el codigo ya existe
         if codigo in productos:
             return False, "El codigo del producto ya existe"
 
-        # Convertir los valores numericos
         precio_compra = convertir_entero(precio_compra)
         precio_venta = convertir_entero(precio_venta)
         stock = convertir_entero(stock)
         stock_minimo = convertir_entero(stock_minimo)
 
-        # Guardar el producto en el diccionario
         productos[codigo] = {
             "nombre": nombre,
             "categoria": categoria,
@@ -48,28 +74,30 @@ def registrar_producto(productos, codigo, nombre, categoria,
             "activo": True
         }
 
+        if not guardar_productos(productos):
+            return True, "Producto registrado, pero no se pudo guardar en JSON"
+
         return True, "Producto registrado correctamente"
 
-    except (ValueError, TypeError):
+    except (ValueError, TypeError, AttributeError):
         return False, "Ingrese valores numericos enteros y no negativos"
 
 
-# 3. EDITAR PRODUCTO
+# 5. EDITAR PRODUCTO
 def editar_producto(productos, codigo, datos):
 
-    codigo = codigo.strip().upper()
-
-    if codigo not in productos:
-        return False, "El producto no existe"
-
-    # Campos que se pueden modificar
-    campos_permitidos = [
-        "nombre", "categoria",
-        "precio_compra", "precio_venta",
-        "stock", "stock_minimo"
-    ]
-
     try:
+        codigo = codigo.strip().upper()
+
+        if codigo not in productos:
+            return False, "El producto no existe"
+
+        campos_permitidos = [
+            "nombre", "categoria",
+            "precio_compra", "precio_venta",
+            "stock", "stock_minimo"
+        ]
+
         producto = productos[codigo].copy()
 
         for campo, valor in datos.items():
@@ -91,13 +119,16 @@ def editar_producto(productos, codigo, datos):
 
         productos[codigo] = producto
 
+        if not guardar_productos(productos):
+            return True, "Producto actualizado, pero no se pudo guardar en JSON"
+
         return True, "Producto actualizado correctamente"
 
     except (ValueError, TypeError, AttributeError):
         return False, "Ingrese datos validos para actualizar el producto"
 
 
-# 4. BUSCAR PRODUCTO
+# 6. BUSCAR PRODUCTO
 def buscar_producto(productos, codigo):
 
     codigo = codigo.strip().upper()
@@ -108,7 +139,7 @@ def buscar_producto(productos, codigo):
     return None
 
 
-# 5. DESACTIVAR PRODUCTO
+# 7. DESACTIVAR PRODUCTO
 def desactivar_producto(productos, codigo):
 
     codigo = codigo.strip().upper()
@@ -121,10 +152,13 @@ def desactivar_producto(productos, codigo):
 
     productos[codigo]["activo"] = False
 
+    if not guardar_productos(productos):
+        return True, "Producto desactivado, pero no se pudo guardar en JSON"
+
     return True, "Producto desactivado correctamente"
 
 
-# 6. CONSULTAR INVENTARIO
+# 8. CONSULTAR INVENTARIO
 def consultar_inventario(productos):
 
     inventario = {}
@@ -137,7 +171,7 @@ def consultar_inventario(productos):
     return inventario
 
 
-# 7. REGISTRAR ENTRADA DE PRODUCTOS
+# 9. REGISTRAR ENTRADA DE PRODUCTOS
 def registrar_entrada(productos, codigo, cantidad):
 
     try:
@@ -155,13 +189,16 @@ def registrar_entrada(productos, codigo, cantidad):
 
         productos[codigo]["stock"] += cantidad
 
+        if not guardar_productos(productos):
+            return True, "Entrada registrada, pero no se pudo guardar en JSON"
+
         return True, "Entrada registrada correctamente"
 
-    except (ValueError, TypeError):
+    except (ValueError, TypeError, AttributeError):
         return False, "Ingrese una cantidad numerica valida"
 
 
-# 8. REGISTRAR SALIDA DE PRODUCTOS
+# 10. REGISTRAR SALIDA DE PRODUCTOS
 def registrar_salida(productos, codigo, cantidad):
 
     try:
@@ -182,13 +219,16 @@ def registrar_salida(productos, codigo, cantidad):
 
         productos[codigo]["stock"] -= cantidad
 
+        if not guardar_productos(productos):
+            return True, "Salida registrada, pero no se pudo guardar en JSON"
+
         return True, "Salida registrada correctamente"
 
-    except (ValueError, TypeError):
+    except (ValueError, TypeError, AttributeError):
         return False, "Ingrese una cantidad numerica valida"
 
 
-# 9. VERIFICAR PRODUCTOS CON STOCK BAJO
+# 11. VERIFICAR PRODUCTOS CON STOCK BAJO
 def verificar_stock(productos):
 
     productos_bajos = {}
@@ -201,3 +241,4 @@ def verificar_stock(productos):
                 productos_bajos[codigo] = datos.copy()
 
     return productos_bajos
+
