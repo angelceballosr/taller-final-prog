@@ -454,13 +454,13 @@ def generar_factura(carrito, productos, ventas, pago):
         "fecha": fecha_hora_actual(),
         "items": [
             {
-                "codigo": l["codigo"],
-                "nombre": l["nombre"],
-                "cantidad": l["cantidad"],
-                "precio": l["precio"],
-                "subtotal": round(l["cantidad"] * l["precio"]),
+                "codigo": linea["codigo"],
+                "nombre": linea["nombre"],
+                "cantidad": linea["cantidad"],
+                "precio": linea["precio"],
+                "subtotal": round(linea["cantidad"] * linea["precio"]),
             }
-            for l in carrito
+            for linea in carrito
         ],
         "subtotal": totales["subtotal"],
         "descuento": totales["descuento"],
@@ -744,7 +744,8 @@ def limpiar_tabla(tabla):
 
 
 def avisar(mensaje, parent=None):
-    messagebox.showwarning("Revise los datos", str(mensaje), parent=parent)
+    opciones = {"parent": parent} if parent is not None else {}
+    messagebox.showwarning("Revise los datos", str(mensaje), **opciones)
 
 
 # ======================================================================
@@ -820,7 +821,8 @@ class AplicacionSupermercado(tk.Tk):
             return False, None
         except Exception as error:  # error inesperado: no dejar datos a medias
             self.productos, self.ventas, self.caja = copia
-            messagebox.showerror("Error inesperado", str(error), parent=parent)
+            opciones = {"parent": parent} if parent is not None else {}
+            messagebox.showerror("Error inesperado", str(error), **opciones)
             return False, None
         self.guardar_todo()
         self.actualizar_pantallas()
@@ -1141,8 +1143,8 @@ class DialogoProducto(tk.Toplevel):
         def operacion():
             if self.codigo is None:
                 registrar_producto(productos, v["codigo"], v["nombre"], v["categoria"],
-                                       v["precio_compra"], v["precio_venta"], v["stock"],
-                                       v["stock_minimo"])
+                                   v["precio_compra"], v["precio_venta"], v["stock"],
+                                   v["stock_minimo"])
             else:
                 editar_producto(
                     self.app.productos, self.codigo, nombre=v["nombre"], categoria=v["categoria"],
@@ -1315,7 +1317,7 @@ class PantallaVentas(ttk.Frame):
     def agregar(self):
         try:
             agregar_carrito(self.carrito, self.app.productos,
-                               self.var_codigo.get(), self.var_cantidad.get())
+                            self.var_codigo.get(), self.var_cantidad.get())
         except ValueError as error:
             avisar(error)
             return
@@ -1330,7 +1332,7 @@ class PantallaVentas(ttk.Frame):
             messagebox.showinfo("Retirar", "Seleccione una línea del carrito.")
             return
         codigo = seleccion[0]
-        actual = next(l["cantidad"] for l in self.carrito if l["codigo"] == codigo)
+        actual = next(linea["cantidad"] for linea in self.carrito if linea["codigo"] == codigo)
         cantidad = simpledialog.askstring(
             "Retirar del carrito", f"¿Cuántas unidades de {codigo} retirar?",
             initialvalue=str(actual), parent=self)
@@ -1357,7 +1359,7 @@ class PantallaVentas(ttk.Frame):
         def operacion():
             factura = generar_factura(self.carrito, self.app.productos, self.app.ventas, pago)
             registrar_movimiento(self.app.caja, "venta",
-                                    f"Factura {factura['numero']:05d}", factura["total"])
+                                 f"Factura {factura['numero']:05d}", factura["total"])
             return factura
 
         correcto, factura = self.app.ejecutar(operacion)
@@ -1499,7 +1501,7 @@ class DialogoDevolucion(tk.Toplevel):
             factura = buscar_factura(self.app.ventas, self.numero)
             monto = registrar_devolucion(factura, self.app.productos, items)
             registrar_movimiento(self.app.caja, "devolucion",
-                                    f"Devolución factura {factura['numero']:05d}", monto)
+                                 f"Devolución factura {factura['numero']:05d}", monto)
             return monto
 
         correcto, monto = self.app.ejecutar(operacion, parent=self)
