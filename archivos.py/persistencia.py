@@ -1,29 +1,38 @@
 
+
 import json
 import os
 
 
 # ==========================================
-# 1. CARGAR DATOS
+# MODULO DE PERSISTENCIA
+# SISTEMA DE GESTION DE SUPERMERCADO
 # ==========================================
 
+
+# 1. CARGAR DATOS DESDE UN ARCHIVO JSON
 def cargar_datos(nombre_archivo, datos_iniciales):
 
     try:
 
+        # Verificar si el archivo existe
+        if not os.path.exists(nombre_archivo):
+
+            print("El archivo no existe. Se iniciaran datos vacios.")
+
+            # Crear el archivo con los datos iniciales
+            guardar_datos(nombre_archivo, datos_iniciales)
+
+            return datos_iniciales
+
+        # Abrir y leer el archivo
         with open(nombre_archivo, "r", encoding="utf-8") as archivo:
 
             datos = json.load(archivo)
 
-            print("Datos cargados correctamente desde", nombre_archivo)
+        print("Datos cargados correctamente desde", nombre_archivo)
 
-            return datos
-
-    except FileNotFoundError:
-
-        print("El archivo no existe. Se iniciaran datos vacios.")
-
-        return datos_iniciales
+        return datos
 
     except json.JSONDecodeError:
 
@@ -39,21 +48,27 @@ def cargar_datos(nombre_archivo, datos_iniciales):
 
 
 # ==========================================
-# 2. GUARDAR DATOS
+# 2. GUARDAR DATOS EN UN ARCHIVO JSON
 # ==========================================
 
 def guardar_datos(nombre_archivo, datos):
 
+    # Nombre del archivo temporal
     archivo_temporal = nombre_archivo + ".tmp"
 
     try:
 
-        # Primero se crea un archivo temporal
+        # Guardar primero la informacion en el archivo temporal
         with open(archivo_temporal, "w", encoding="utf-8") as archivo:
 
-            json.dump(datos, archivo, indent=4, ensure_ascii=False)
+            json.dump(
+                datos,
+                archivo,
+                indent=4,
+                ensure_ascii=False
+            )
 
-        # Si se guardo correctamente, reemplaza el archivo anterior
+        # Reemplazar el archivo anterior por el nuevo
         os.replace(archivo_temporal, nombre_archivo)
 
         print("Datos guardados correctamente en", nombre_archivo)
@@ -68,11 +83,13 @@ def guardar_datos(nombre_archivo, datos):
 
     finally:
 
-        # Eliminar el temporal si quedo sin utilizar
+        # Eliminar el archivo temporal si todavia existe
         if os.path.exists(archivo_temporal):
 
             try:
+
                 os.remove(archivo_temporal)
 
             except OSError:
+
                 print("No se pudo eliminar el archivo temporal.")
