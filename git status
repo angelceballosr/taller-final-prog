@@ -1,0 +1,9 @@
+*   [33m30b5504[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32msistema-supermercado[m[33m)[m Integrar cambios de main en sistema-supermercado
+[31m|[m[32m\[m  
+[31m|[m * [33mea5ceff[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m cambios en persistencia
+[31m|[m * [33mc7bc11a[m  cambio de ventas
+[31m|[m * [33mf386375[m Prueba de sincronizacion
+[31m|[m * [33mac32a67[m  cambio y subida de funciones
+* [32m|[m [33m508eb6a[m[33m ([m[1;31mcompanero/sistema-supermercado[m[33m, [m[1;32mrespaldo-antes-de-merge[m[33m)[m Corrige avisos de pyright y flake8 en main.py
+* [32m|[m [33mc78d969[m Unifica todo el programa en main.py
+* [32m|[m [33m2abe568[m Agrega el sistema de supermercado completo
